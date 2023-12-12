@@ -55,24 +55,21 @@ def add_cube_to_workspace(name,x,y,z,sx,sy,sz,ox,oy,oz,ow):
 box_dim = 0.0254
 box_location = get_box_location()
 ee_pose = lib.get_current_end_effector_pose()
-print(ee_pose, box_location)
-# add_cube_to_workspace("cube", box_location[0], box_location[1], box_location[2], box_dim, box_dim, box_dim, box_location[3], box_location[4], box_location[5], box_location[6])
 
-
-print("moving to:", box_location[0], box_location[1], box_location[2] + 0.15, ee_pose[3], ee_pose[4], ee_pose[5])
-lib.go(box_location[0]+0.03, box_location[1]-0.03, box_location[2] + 0.1, ee_pose[3], ee_pose[4], ee_pose[5], orientation_constraint=False, position_constraint=False, joint_constraint=False, velocity=1.0, acceleration=0.8)
+lib.go(box_location[0] + box_dim, box_location[1] - box_dim, box_location[2] + 0.1, ee_pose[3], ee_pose[4], ee_pose[5], orientation_constraint=False, position_constraint=False, joint_constraint=False, velocity=1.0, acceleration=0.8)
 rospy.sleep(1)
 
-lib.go(box_location[0]+0.03, box_location[1]-0.03, box_location[2] + 0.06, ee_pose[3], ee_pose[4], ee_pose[5], orientation_constraint=False, position_constraint=False, joint_constraint=False, velocity=1.0, acceleration=0.8)
+lib.go(box_location[0] + box_dim, box_location[1] - box_dim, box_location[2] + 0.1 - box_dim, ee_pose[3], ee_pose[4], ee_pose[5], orientation_constraint=False, position_constraint=False, joint_constraint=False, velocity=1.0, acceleration=0.8)
 rospy.sleep(1)
 
 lib.close_gripper("cube")
 
-lib.go(box_location[0], box_location[1]+0.02, box_location[2] + 0.2, ee_pose[3], ee_pose[4], ee_pose[5], orientation_constraint=False, position_constraint=False, joint_constraint=False, velocity=1.0, acceleration=0.8)
-
+# move to a random drop location
+lib.go(box_location[0], box_location[1] + box_dim, box_location[2] + 0.2, ee_pose[3], ee_pose[4], ee_pose[5], orientation_constraint=False, position_constraint=False, joint_constraint=False, velocity=1.0, acceleration=0.8)
 
 lib.open_gripper()
 
+# move to original position
 lib.go(ee_pose[0], ee_pose[1], ee_pose[2], ee_pose[3], ee_pose[4], ee_pose[5])
 
 
