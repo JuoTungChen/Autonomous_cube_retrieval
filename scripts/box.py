@@ -26,7 +26,6 @@ camera_info_received = False
 camera_matrix = None
 dist_coeffs = None
 cube_points_3D = [(0, 0, box_height), (box_width, 0, box_height), (box_width, 0, 0), (box_width, box_width, 0), (0, box_width, 0), (0, box_width, box_height)]
-
 # Callback function to process RGB images
 def image_callback(rgb_msg):
     global camera_info_received, camera_matrix, dist_coeffs
@@ -47,7 +46,7 @@ def image_callback(rgb_msg):
     hsv_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2HSV)
 
     # Define color range for the orange box
-    lower_color = np.array([0, 100, 100], dtype=np.uint8)  # Lower bound for orange in HSV
+    lower_color = np.array([5, 100, 100], dtype=np.uint8)  # Lower bound for orange in HSV
     upper_color = np.array([50, 255, 255], dtype=np.uint8)  # Upper bound for orange in HSV
 
     # Masking based on color
@@ -81,7 +80,7 @@ def image_callback(rgb_msg):
                 x = int(x)
                 y = int(y)
                 corners_2d[i] = (x, y)
-                cv2.circle(rgb_image, (x, y), 8, (0, 0, 255), -1)
+                cv2.circle(rgb_image, (x, y), 4, (0, 0, 255), -1)
                 cv2.putText(rgb_image, corner_names[i], (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
                 if(i==5):
 
@@ -92,21 +91,15 @@ def image_callback(rgb_msg):
                     distances = [np.linalg.norm(corners_2d[i] - corners_2d[(i+1)%6]) for i in range(6)]
 
                     # Check if the distances are similar
-                    tolerance = 0.05  # Adjust this value as needed
+                    tolerance = 0.03  # Adjust this value as needed
                     mean_distance = np.mean(distances)
                     if all(abs(distance - mean_distance)//mean_distance <= tolerance for distance in distances):
                         # The distances are similar, so proceed with the pose estimation
                         if len(corners_2d) >= 4 and len(corners_3d) >= 4 and len(corners_2d) == len(corners_3d):
-                            # rospy.loginfo("corners_2d: {}".format(corners_2d))
-                            # rospy.loginfo("corners_3d: {}".format(corners_3d))
                             _, rvec, tvec = cv2.solvePnP(corners_3d, corners_2d, camera_matrix, dist_coeffs)
 
-
-                    # Convert rotation vector to rotation matrix
+                           # Convert rotation vector to rotation matrix
                             R, _ = cv2.Rodrigues(rvec)
-                            # rospy.loginfo("R: {}".format(R))
-                            # draw_axis(R, tvec, rgb_image, corners_2d[0])
-                            pub_tf_inv(R, tvec)
                             pub_tf(R, tvec)
 
                         else:
@@ -178,9 +171,9 @@ def pub_tf(R, tvec):
     transform.child_frame_id = "box"  # The name of the child frame
 
     # Fill in the translation
-    transform.transform.translation.x = tvec[0]
-    transform.transform.translation.y = tvec[1]
-    transform.transform.translation.z = tvec[2]
+    transform.transform.translation.x = float(tvec[0])
+    transform.transform.translation.y = float(tvec[1])
+    transform.transform.translation.z = float(tvec[2])
 
     # Convert the rotation matrix to a quaternion
     quaternion = tf.transformations.quaternion_from_matrix(R_4x4)
@@ -191,43 +184,10 @@ def pub_tf(R, tvec):
     transform.transform.rotation.y = quaternion[1]
     transform.transform.rotation.z = quaternion[2]
     transform.transform.rotation.w = quaternion[3]
+
+    rospy.loginfo("box pose: {}".format(transform))
     br = tf2_ros.TransformBroadcaster()
     br.sendTransform(transform)
-
-def pub_tf_inv(R, tvec):
-    # Calculate the inverse rotation matrix and the inverse translation vector
-    R_inv = np.transpose(R)
-    tvec_inv = -np.dot(R_inv, tvec)
-
-    # Convert the inverse rotation matrix to a 4x4 matrix
-    R_4x4_inv = np.eye(4)
-    R_4x4_inv[:3, :3] = R_inv
-
-    # Create a TransformStamped message
-    transform = TransformStamped()
-
-    # Fill in the header of the TransformStamped message
-    transform.header.stamp = rospy.Time.now()
-    transform.header.frame_id = "camera_link"
-    transform.child_frame_id = "box_inv"
-
-    # Fill in the translation part of the transform
-    transform.transform.translation.x = tvec_inv[0]
-    transform.transform.translation.y = tvec_inv[1]
-    transform.transform.translation.z = tvec_inv[2]
-
-    # Convert the 4x4 inverse rotation matrix to a quaternion
-    quaternion = tf.transformations.quaternion_from_matrix(R_4x4_inv)
-
-    # Fill in the rotation part of the transform
-    transform.transform.rotation.x = quaternion[0]
-    transform.transform.rotation.y = quaternion[1]
-    transform.transform.rotation.z = quaternion[2]
-    transform.transform.rotation.w = quaternion[3]
-
-    # Create a TransformBroadcaster and publish the transform
-    br = tf.TransformBroadcaster()
-    br.sendTransformMessage(transform)
 
 def draw_axis(rotation_vector, translation_vector, rgb_image, corner):
     # Define the axis (a 3D array corresponding to 3 lines in the x, y, and z directions)
