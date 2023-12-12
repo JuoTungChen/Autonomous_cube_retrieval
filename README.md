@@ -2,6 +2,7 @@
 
 ## Description
 This project addresses the challenge of autonomously navigating a robotic arm, specifically a UR5 manipulator, to pick up a cube in an environment where the initial positions of the robot's base frame, the RealSense camera, and the cube are unknown. The objective is to develop an integrated solution that combines computer vision techniques, registration, and robotic control strategies to achieve precise and reliable manipulation.
+
 ![setup](https://github.com/JuoTungChen/Autonomous_cube_retrieval/raw/master/images/setup.jpg)
 
 ## Table of Contents
@@ -13,11 +14,13 @@ This project addresses the challenge of autonomously navigating a robotic arm, s
 1. Object Detection and Segmentation
 
     Utilizing a classical computer vision approach (color thresholding, Canny edge detection, and corner detection), the system is able to identify and segment the cube.
+    
     ![Cube Corner](https://github.com/JuoTungChen/Autonomous_cube_retrieval/raw/master/images/cube_corner.png)
 
 2. Pose Estimation
 
     The [Perspective-n-Point (PnP) algorithm](https://docs.opencv.org/4.x/d5/d1f/calib3d_solvePnP.html) was employed to determine the pose of the cube relative to the RealSense camera. By utilizing the 2D image coordinates of cube corners in the camera frame and their corresponding 3D coordinates in the world frame, PnP efficiently calculated the rotation and translation vectors, providing a precise spatial understanding of the cube's position and orientation in the camera's field of view. This information was crucial for subsequent robotic manipulation tasks.
+
     ![Pnp](https://github.com/JuoTungChen/Autonomous_cube_retrieval/raw/master/images/solve_pnp.png)
 
     ![pose](https://github.com/JuoTungChen/Autonomous_cube_retrieval/raw/master/images/pose_estimation.png)
@@ -97,6 +100,7 @@ roslaunch ar_track_alvar tag_detector_rs.launch
 ```
 
 Now you should be able to see the camera frame, the ar marker, as well as the pose of the cube in rviz like this:
+
 ![rviz](https://github.com/JuoTungChen/Autonomous_cube_retrieval/raw/master/images/rviz_frames.jpg)
 
 Finally, run `cube_pick_and_place.py` and the robot will pick the cube up and then drop it down!
