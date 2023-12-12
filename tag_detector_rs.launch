@@ -6,21 +6,11 @@
 	<arg name="cam_image_topic" default="/camera/color/image_raw" />
 	<arg name="cam_info_topic" default="/camera/color/camera_info" />
 	
-	<arg name="cam_image_topic_2" default="/camera2/color/image_raw" />
-	<arg name="cam_info_topic_2" default="/camera2/color/camera_info" />
 	<arg name="output_frame" default="world" /> 
-
 	
 	<node pkg="tf" type="static_transform_publisher" name="cam_tf_publisher" args="0.02 1.32 .11 -1.57 0 0 ar_marker_15 world 100" output="screen"/>
 
-<!-- <node pkg="tf" type="static_transform_publisher" name="cam_tf_publisher" args="0 1.32 .10 -1.57 0 0 ar_marker_2 world 100" output="screen"/>-->
-
-	<!-- <node pkg="tf" type="static_transform_publisher" name="cam_tf_publisher" args="0.49 -0.40 0.10 1.57 0 0 ar_marker_2 world 100" output="screen"/> -->
-
 	<node name="ar_tag_rs1" pkg="ar_track_alvar" type="individualMarkersNoKinect" respawn="false" output="screen" args="$(arg marker_size_1) $(arg max_new_marker_error) $(arg max_track_error) $(arg cam_image_topic) $(arg cam_info_topic) $(arg output_frame)">
 	</node>
-	<node name="ar_tag_rs2" pkg="ar_track_alvar" type="individualMarkersNoKinect" respawn="false" output="screen" args="$(arg marker_size_1) $(arg max_new_marker_error) $(arg max_track_error) $(arg cam_image_topic_2) $(arg cam_info_topic_2) $(arg output_frame)">
-	</node>
-
 </launch>
 
