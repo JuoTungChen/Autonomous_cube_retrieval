@@ -1,7 +1,7 @@
 # Autonomous Cube Retrieval
 
 ## Description
-This project addresses the challenge of autonomously navigating a robotic arm, specifically a UR5 manipulator, to pick up a cube in an environment where the initial positions of the robot's base frame, the RealSense camera, and the cube are unknown. The objective is to develop an integrated solution that combines computer vision techniques, registration, and robotic control strategies to achieve precise and reliable manipulation.
+This project addresses the challenge of autonomously navigating a robotic arm, specifically a UR5 manipulator, to pick up a cube in an environment where the initial positions of the robot's base frame, the RealSense camera, and the cube are unknown. The objective is to develop an integrated solution that combines computer vision techniques, registration, and robotic control strategies to achieve Position-Based Visual Servoing (PBVS).
 
 ![setup](https://github.com/JuoTungChen/Autonomous_cube_retrieval/raw/master/images/setup.jpg)
 
